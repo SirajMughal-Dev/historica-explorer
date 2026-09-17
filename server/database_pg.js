@@ -14,43 +14,62 @@ export const initPostgreSQLDatabase = async () => {
 
   const { Pool } = pkg.default || pkg;
 
-  const DB_HOST = process.env.DB_HOST || 'localhost';
-  const DB_USER = process.env.DB_USER || 'postgres';
-  const DB_PASSWORD = process.env.DB_PASSWORD || 'postgres';
-  const DB_NAME = process.env.DB_NAME || 'historica_explorer';
-  const DB_PORT = process.env.DB_PORT || 5432;
+  const connectionString = process.env.DATABASE_URL;
 
-  // First connect to default postgres DB to ensure target database exists
-  const tempPool = new Pool({
-    host: DB_HOST,
-    user: DB_USER,
-    password: DB_PASSWORD,
-    port: DB_PORT,
-    database: 'postgres'
-  });
+  let pool;
 
-  try {
-    const res = await tempPool.query(`SELECT 1 FROM pg_database WHERE datname = $1`, [DB_NAME]);
-    if (res.rowCount === 0) {
-      await tempPool.query(`CREATE DATABASE "${DB_NAME}";`);
-      console.log(`Created PostgreSQL database "${DB_NAME}"`);
+  if (connectionString) {
+    // Managed Postgres (Neon, Supabase, Railway, etc.) — the database already
+    // exists, so we connect directly and skip the "create database if missing"
+    // step below, which only makes sense for a local Postgres install.
+    pool = new Pool({
+      connectionString,
+      ssl: { rejectUnauthorized: false }
+    });
+    console.log(`Connected to PostgreSQL via DATABASE_URL (managed/cloud database).`);
+  } else {
+    const DB_HOST = process.env.DB_HOST || 'localhost';
+    const DB_USER = process.env.DB_USER || 'postgres';
+    const DB_PASSWORD = process.env.DB_PASSWORD || 'postgres';
+    const DB_NAME = process.env.DB_NAME || 'historica_explorer';
+    const DB_PORT = process.env.DB_PORT || 5432;
+    const useSsl = process.env.DB_SSL === 'false' ? false : undefined;
+
+    // First connect to default postgres DB to ensure target database exists
+    // (local Postgres only — managed providers like Neon already have the DB).
+    const tempPool = new Pool({
+      host: DB_HOST,
+      user: DB_USER,
+      password: DB_PASSWORD,
+      port: DB_PORT,
+      database: 'postgres',
+      ssl: useSsl
+    });
+
+    try {
+      const res = await tempPool.query(`SELECT 1 FROM pg_database WHERE datname = $1`, [DB_NAME]);
+      if (res.rowCount === 0) {
+        await tempPool.query(`CREATE DATABASE "${DB_NAME}";`);
+        console.log(`Created PostgreSQL database "${DB_NAME}"`);
+      }
+    } catch (err) {
+      console.warn('Database check note:', err.message);
+    } finally {
+      await tempPool.end();
     }
-  } catch (err) {
-    console.warn('Database check note:', err.message);
-  } finally {
-    await tempPool.end();
+
+    // Connect to target database pool
+    pool = new Pool({
+      host: DB_HOST,
+      user: DB_USER,
+      password: DB_PASSWORD,
+      port: DB_PORT,
+      database: DB_NAME,
+      ssl: useSsl
+    });
+
+    console.log(`Connected to PostgreSQL Database [${DB_NAME}] on ${DB_HOST}:${DB_PORT}`);
   }
-
-  // Connect to target database pool
-  const pool = new Pool({
-    host: DB_HOST,
-    user: DB_USER,
-    password: DB_PASSWORD,
-    port: DB_PORT,
-    database: DB_NAME
-  });
-
-  console.log(`Connected to PostgreSQL Database [${DB_NAME}] via pgAdmin on ${DB_HOST}:${DB_PORT}`);
 
   // Create Tables
   await pool.query(`
