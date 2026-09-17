@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png">
+    <link rel="icon" type="image/png" sizes="128x128" href="/favicon-128.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Historica Explorer | Premium Travel & Cultural Guide</title>
+    <meta name="description" content="Discover the world's richest heritage, breathtaking landmarks, vibrant culture, and culinary histories across countries, cities, and iconic destinations." />
+    <meta name="theme-color" content="#0b3d24" />
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              heading: ['Outfit', 'sans-serif'],
+              body: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              /* Eco/travel green re-theme: replaces the old sky-blue accent everywhere */
+              sky: {
+                50: '#eefdf3',
+                100: '#d6f9e2',
+                200: '#aff0c4',
+                300: '#78e1a0',
+                400: '#43c97e',
+                500: '#22a862',
+                600: '#16874e',
+                700: '#136c41',
+                800: '#125636',
+                900: '#10472e',
+                950: '#062818',
+              },
+              /* Teal re-theme for the secondary gradient tone */
+              indigo: {
+                50: '#ecfdf9',
+                100: '#d1faf0',
+                200: '#a6f2e0',
+                300: '#6fe4cd',
+                400: '#3ecdb5',
+                500: '#21b099',
+                600: '#178d7c',
+                700: '#167166',
+                800: '#175a53',
+                900: '#164b46',
+                950: '#062b29',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
