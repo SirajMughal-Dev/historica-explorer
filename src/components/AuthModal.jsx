@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { X, Mail, Lock, User, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
+import { apiUrl } from '../lib/api';
 
 const AuthModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
@@ -31,7 +32,7 @@ const AuthModal = ({ isOpen, onClose }) => {
     }
 
     setLoading(true);
-    const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
+    const endpoint = apiUrl(isLogin ? '/api/auth/login' : '/api/auth/signup');
 
     try {
       const res = await fetch(endpoint, {
